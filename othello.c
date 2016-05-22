@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #define N 8
 
 char joueur1[50];
@@ -65,11 +66,17 @@ short recuperer_valeur()
 	if (turn == 1) {
 		printf("[SYS] Au tour du joueur1(X) \"%s\". Que voulez-vous jouer ? ",joueur1);
 		scanf("%s",jeu);
-		printf("[SYS] Vous avez joué %s\n\n",jeu);
+		if (strcmp(jeu,"tab") == 0)
+			afficher_plateau();
+		else
+			printf("[SYS] Vous avez joué %s\n\n",jeu);
 	} else if (turn == 2) {
 		printf("[SYS] Au tour du joueur2(O) \"%s\". Que voulez-vous jouer ? ",joueur2);
 		scanf("%s",jeu);
-		printf("[SYS] Vous avez joué %s\n\n",jeu);
+		if (strcmp(jeu,"tab") == 0)
+			afficher_plateau();
+		else
+			printf("[SYS] Vous avez joué %s\n\n",jeu);
 	} else {
 		fprintf(stderr, "[ERR] Erreur selection joueur\n");
 		return -1;
@@ -241,6 +248,136 @@ bool test_coup (short x, short y)
 
 
 
+void jouer_coup(short x, short y)
+{
+
+	plateau[x][y] = turn;
+
+	int i,j;
+	short autre = (turn == 1) ? 2 : 1;
+
+
+	// Jouer la droite
+    j = x + 1;
+    while (case_valide(y, j) && plateau[y][j] == autre) j++;
+    if (case_valide(y, j) && plateau[y][j] == turn) {
+        j = x + 1;
+        while (plateau[y][j] == autre) {
+            plateau[y][j] = turn;
+            j++;
+        }
+    }
+
+    // Jouer la gauche
+    j = x - 1;
+    while (case_valide(y, j) && plateau[y][j] == autre) j--;
+    if (case_valide(y, j) && plateau[y][j] == turn) {
+        j = x - 1;
+        while (plateau[y][j] == autre) {
+            plateau[y][j] = turn;
+            j--;
+        }
+    }
+
+
+    // Jouer le haut 
+    i = y - 1; 
+    // Tant que c'est la case adversaire en haut.
+    while (case_valide(i, x) && plateau[i][x] == autre) i--; 
+    if (case_valide(i, x) && plateau[i][x] == turn) {
+        i = y - 1;
+        while (plateau[i][x] == autre) {
+            plateau[i][x] = turn; // Manger les cases
+            i--;
+        }
+    }
+
+    // Jouer le bas
+    i = y + 1; 
+    while (case_valide(i, x) && plateau[i][x] == autre) i++;
+    if (case_valide(i, x) && plateau[i][x] == turn) {
+        i = y + 1;
+        while (plateau[i][x] == autre) {
+            plateau[i][x] = turn; // Manger les cases
+            i++;
+        }
+    }
+
+
+    // Jouer diagonale gauche vers le haut
+    i = y - 1;
+    j = x - 1;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i--;
+        j--;
+    }
+    if (case_valide(i, j) && plateau[i][j] == turn) {
+        i = y - 1;
+        j = x - 1;
+        while (plateau[i][j] == autre) {
+            plateau[i][j] = turn;
+            i--;
+            j--;
+        }
+    }
+
+    // Jouer diagonale droite vers le haut
+    i = y - 1;
+    j = x + 1;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i--;
+        j++;
+    }
+    if (case_valide(i, j) && plateau[i][j] == turn) {
+        i = y - 1;
+        j = x + 1;
+        while (plateau[i][j] == autre) {
+            plateau[i][j] = turn;
+            i--;
+            j++;
+        }
+    }
+
+
+    // Jouer diagonale gauche vers le bas
+    i = y + 1;
+    j = x + 1;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i++;
+        j++;
+    }
+    if (case_valide(i, j) && plateau[i][j] == turn) {
+        i = y + 1;
+        j = x + 1;
+        while (plateau[i][j] == autre) {
+            plateau[i][j] = turn;
+            i++;
+            j++;
+        }
+    }
+
+
+    // Jouer diagonale droite vers le bas
+    i = y + 1;
+    j = x - 1;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i++;
+        j--;
+    }
+    if (case_valide(i, j) && plateau[i][j] == turn) {
+        i = y + 1;
+        j = x - 1;
+        while (plateau[i][j] == autre) {
+            plateau[i][j] = turn;
+            i++;
+            j--;
+        }
+    }
+
+}
+
+
+
 int main ()
 {
 
@@ -261,6 +398,7 @@ int main ()
 	{
 		short val = recuperer_valeur();
 
+
 		if (val < 0)
 			finished=1;
 
@@ -280,7 +418,11 @@ int main ()
 			continue;
 		}
 
-		if (x < 0 || x > 8 || y < 0 || y > 8)
+
+		if (strcmp(jeu,"tab") == 0)
+			continue;
+
+		if ((x < 0 || x > 8 || y < 0 || y > 8))
 		{
 			fprintf(stderr, "[ERR] Vous avez entré une valeur erronnée.\n");
 			continue;
@@ -289,15 +431,13 @@ int main ()
 			fprintf(stderr, "[ERR] La case est déjà remplie :( Réessayez\n");
 			continue;
 		}
-		if (!test_adjacence(x,y)) {
+		if (!test_adjacence(x,y) || !test_coup(x,y)) {
 			fprintf(stderr, "[ERR] Ce coup est impossible. Réessayez\n");
 			continue;
 		}
 
-		if (!test_coup(x,y)) {
-			fprintf(stderr, "[ERR] Coup incorrect. Réessayez\n");
-			continue;
-		}
+
+		jouer_coup(x,y);
 
 		turn = (turn == 1) ? 2 : 1;
 
