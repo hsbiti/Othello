@@ -78,7 +78,7 @@ short recuperer_valeur()
 
 
 /**
-  * @brief Fonction qui teste si la case à jouer est correcte
+  * @brief Fonction qui teste si les cases adjacentes sont vides
   * @return true  si le coup est possible
   *			false sinon
   */
@@ -121,6 +121,12 @@ bool test_adjacence (short x, short y)
 	return true;
 }
 
+
+bool test_coup (short x, short y)
+{
+	
+	return true;
+}
 
 
 
@@ -167,7 +173,8 @@ int main ()
 		{
 			fprintf(stderr, "[ERR] Vous avez entré une valeur erronnée.\n");
 			continue;
-		} else if (plateau[x][y] != 0) {
+		}
+		if (plateau[x][y] != 0) {
 			fprintf(stderr, "[ERR] La case est déjà remplie :( Réessayez\n");
 			continue;
 		}
@@ -175,7 +182,6 @@ int main ()
 			fprintf(stderr, "[ERR] Ce coup est impossible. Réessayez\n");
 			continue;
 		}
-
 
 		turn = (turn == 1) ? 2 : 1;
 
