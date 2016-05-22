@@ -63,11 +63,11 @@ void initialiser()
 short recuperer_valeur()
 {
 	if (turn == 1) {
-		printf("[SYS] Au tour du joueur1 \"%s\". Que voulez-vous jouer ? ",joueur1);
+		printf("[SYS] Au tour du joueur1(X) \"%s\". Que voulez-vous jouer ? ",joueur1);
 		scanf("%s",jeu);
 		printf("[SYS] Vous avez joué %s\n\n",jeu);
 	} else if (turn == 2) {
-		printf("[SYS] Au tour du joueur2 \"%s\". Que voulez-vous jouer ? ",joueur2);
+		printf("[SYS] Au tour du joueur2(O) \"%s\". Que voulez-vous jouer ? ",joueur2);
 		scanf("%s",jeu);
 		printf("[SYS] Vous avez joué %s\n\n",jeu);
 	} else {
@@ -124,16 +124,119 @@ bool test_adjacence (short x, short y)
 }
 
 
+bool case_valide(short x, short y)
+{
+	if ((x >= 0) && (x < N) && (y >= 0) && (y < N))
+		return true;
+
+	return false;
+}
+
+
 bool test_coup (short x, short y)
 {
 
-	short tester = (turn == 1) ? 2 : 1;
+	short autre = (turn == 1) ? 2 : 1;
 
-	for (int i=x; i >= 0; i--) {
+    if (!case_valide(y, x) || plateau[y][x] != 0)
+    	return false;
 
-	}
-	
-	return true;
+    int i, j, ok;
+
+
+    // Tester la droite
+    j = x + 1;
+    ok = 0;
+    while (case_valide(y, j) && plateau[y][j] == autre) {
+        j++;
+        ok = 1;
+    }
+    if (case_valide(y, j) && plateau[y][j] == turn && ok == 1)
+    	return true;
+
+	// Tester la gauche
+    j = x - 1;
+    ok = 0;
+    while (case_valide(y, j) && plateau[y][j] == autre) {
+        j--;
+        ok = 1;
+    }
+    if (case_valide(y, j) && plateau[y][j] == turn && ok == 1)
+    	return true;
+
+    // Tester le haut
+	i = y - 1;
+    ok = 0;
+    while (case_valide(i, x) && plateau[i][x] == autre) {
+        i--;
+        ok = 1;
+    }
+    if (case_valide(i, x) && plateau[i][x] == turn && ok == 1) 
+    	return true;
+
+
+    // Tester le bas
+    i = y + 1;
+    ok = 0;
+    while (case_valide(i, x) && plateau[i][x] == autre) {
+        i++;
+        ok = 1;
+    }
+    if (case_valide(i, x) && plateau[i][x] == turn && ok == 1)
+    	return true;
+
+
+    // Tester diagonale gauche vers le haut
+    i = y - 1;
+    j = x - 1;
+    ok = 0;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i--;
+        j--;
+        ok = 1;
+    }
+    if (case_valide(i, j) && plateau[i][j] == turn && ok == 1)
+    	return true;
+
+
+    // Tester diagonale droite vers le haut
+    i = y - 1;
+    j = x + 1;
+    ok = 0;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i--;
+        j++;
+        ok = 1;
+    }
+    if (case_valide(i, j) && plateau[i][j] == turn && ok == 1)
+    	return true;
+
+
+    // Tester diagonale gauche vers le bas
+    i = y + 1;
+    j = x + 1;
+    ok = 0;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i++;
+        j++;
+        ok = 1;
+    }
+    if (case_valide(i, j) && plateau[i][j] == turn && ok == 1)
+    	return true; 
+
+    // Diagonale droite vers le bas
+    i = y + 1;
+    j = x - 1;
+    ok = 0;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i++;
+        j--;
+        ok = 1;
+    }
+    if (case_valide(i, j) && plateau[i][j] == turn && ok == 1)
+    	return true;
+
+	return false;
 }
 
 
@@ -188,6 +291,11 @@ int main ()
 		}
 		if (!test_adjacence(x,y)) {
 			fprintf(stderr, "[ERR] Ce coup est impossible. Réessayez\n");
+			continue;
+		}
+
+		if (!test_coup(x,y)) {
+			fprintf(stderr, "[ERR] Coup incorrect. Réessayez\n");
 			continue;
 		}
 
