@@ -26,17 +26,19 @@ void afficher_plateau()
 {
 	int	x, y;
 	score_j1 = 0; score_j2 = 0;
-	printf("   A B C D E F G H \n");
+	printf("    A   B   C   D   E   F   G   H \n");
+	printf("  +-------------------------------+\n");
 	for (y = 0; y < N; y++) {
 		printf("%d |",y+1);
 		for (x = 0; x < N; x++) {
-			if (plateau[x][y] == 0)	printf(" |");
-			else if (plateau[x][y] == 1) { printf("X|"); score_j1++;}
-			else if (plateau[x][y] == 2) { printf("O|"); score_j2++; }
+			if (plateau[x][y] == 0)	printf("   |");
+			else if (plateau[x][y] == 1) { printf(" X |"); score_j1++;}
+			else if (plateau[x][y] == 2) { printf(" O |"); score_j2++; }
 		}
 		printf("%d\n",y+1);
+		printf("  +-------------------------------+\n");
 	}
-	printf("   A B C D E F G H \n\n");
+		printf("    A   B   C   D   E   F   G   H \n\n");
 
 	printf("======== SCORE : \"%s\": %d, \"%s\": %d ========\n\n",joueur1, score_j1, joueur2, score_j2);
 
@@ -47,11 +49,11 @@ void afficher_plateau()
   */
 void initialiser()
 {
-	plateau[4][3] = 1;
-	plateau[3][4] = 1;
+	plateau[N/2][N/2-1] = 1;
+	plateau[N/2-1][N/2] = 1;
 
-	plateau[3][3] = 2;
-	plateau[4][4] = 2;
+	plateau[N/2-1][N/2-1] = 2;
+	plateau[N/2][N/2] = 2;
 
 }
 
@@ -124,6 +126,12 @@ bool test_adjacence (short x, short y)
 
 bool test_coup (short x, short y)
 {
+
+	short tester = (turn == 1) ? 2 : 1;
+
+	for (int i=x; i >= 0; i--) {
+
+	}
 	
 	return true;
 }
