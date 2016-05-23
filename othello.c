@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <string.h>
 #define N 8
+#define MAX_LEN 128
+
 
 char joueur1[50];
 char joueur2[50];
@@ -65,14 +67,14 @@ void initialiser()
 short recuperer_valeur()
 {
 	if (turn == 1) {
-		printf("[SYS] Au tour du joueur1(X) \"%s\". Que voulez-vous jouer ? ",joueur1);
+		printf("[SYS] Au tour de \"%s\"(X). Que voulez-vous jouer ? ",joueur1);
 		scanf("%s",jeu);
 		if (strcmp(jeu,"tab") == 0)
 			afficher_plateau();
 		else
 			printf("[SYS] Vous avez joué %s\n\n",jeu);
 	} else if (turn == 2) {
-		printf("[SYS] Au tour du joueur2(O) \"%s\". Que voulez-vous jouer ? ",joueur2);
+		printf("[SYS] Au tour de \"%s\"(O). Que voulez-vous jouer ? ",joueur2);
 		scanf("%s",jeu);
 		if (strcmp(jeu,"tab") == 0)
 			afficher_plateau();
@@ -350,15 +352,37 @@ void jouer_coup(short x, short y)
 
 
 
+ void print_image(FILE *fptr)
+{
+    char read_string[MAX_LEN];
+ 
+    while(fgets(read_string,sizeof(read_string),fptr) != NULL)
+        printf("%s",read_string);
+}
+
+
 int main ()
 {
+
+    char *filename = "description.txt";
+    FILE *fptr = NULL;
+ 
+    if((fptr = fopen(filename,"r")) == NULL)
+    {
+        fprintf(stderr,"Error opening %s\n",filename);
+        return 1;
+    }
+    print_image(fptr);
+    fclose(fptr);
+ 
+    printf("\n\n\n");
+
 
 	printf("[SYS] Entrez le nom du joueur1 (X) : ");
 	scanf("%s",joueur1);
 
 	printf("[SYS] Entrez le nom du joueur2 (O) : ");
 	scanf("%s",joueur2);
-
 
 	printf("[SYS] Joueur1: \"%s\", Joueur2: \"%s\"\n",joueur1, joueur2);
 
