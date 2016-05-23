@@ -41,7 +41,7 @@ void afficher_plateau()
 	}
 		printf("    A   B   C   D   E   F   G   H \n\n");
 
-	printf("======== SCORE : \"%s\": %d, \"%s\": %d ========\n\n",joueur1, score_j1, joueur2, score_j2);
+	printf("====== SCORE : \"%s\": %d, \"%s\": %d ======\n\n",joueur1, score_j1, joueur2, score_j2);
 
 }
 
@@ -60,6 +60,7 @@ void initialiser()
 
 /**
   * @brief Fonction qui récupère uniquement le jeu du joueur courant.
+  *        Le joueur peut mettre la case à jouer (Exemple C4), ou écrire tab pour afficher le plateau
   */
 short recuperer_valeur()
 {
@@ -123,7 +124,8 @@ bool test_adjacence (short x, short y)
 		return false;
 
 	// Cas normal
-	if (!plateau[x+1][y] && !plateau[x+1][y+1] && !plateau[x][y+1] && !plateau[x-1][y+1] && !plateau[x-1][y] && !plateau[x-1][y-1] && !plateau[x][y-1] && !plateau[x+1][y-1])
+	if (!plateau[x+1][y] && !plateau[x+1][y+1] && !plateau[x][y+1] && !plateau[x-1][y+1] 
+        && !plateau[x-1][y] && !plateau[x-1][y-1] && !plateau[x][y-1] && !plateau[x+1][y-1])
 		return false;
 
 
@@ -251,74 +253,58 @@ bool test_coup (short x, short y)
 void jouer_coup(short x, short y)
 {
 
+    printf("Vous jouez : %c%d\n",65+x,y+1);
+
 	plateau[x][y] = turn;
 
-	int i,j;
+	int i=0,j=0;
 	short autre = (turn == 1) ? 2 : 1;
 
-
 	// Jouer la droite
-    j = x + 1;
-    while (case_valide(y, j) && plateau[y][j] == autre) j++;
-    if (case_valide(y, j) && plateau[y][j] == turn) {
-        j = x + 1;
-        while (plateau[y][j] == autre) {
-            plateau[y][j] = turn;
-            j++;
-        }
+    i = x + 1;
+    while (case_valide(y, i) && plateau[y][i] == autre)
+        i++;
+    if (case_valide(y, i) && plateau[y][i] == turn) {
+        for (i=x+1; plateau[y][i] == autre; i++)
+            plateau[y][i] = turn;
     }
 
     // Jouer la gauche
-    j = x - 1;
-    while (case_valide(y, j) && plateau[y][j] == autre) j--;
-    if (case_valide(y, j) && plateau[y][j] == turn) {
-        j = x - 1;
-        while (plateau[y][j] == autre) {
-            plateau[y][j] = turn;
-            j--;
-        }
+    for (i=x-1;case_valide(y, i) && plateau[y][i] == autre; i--) {}
+    
+    if (case_valide(y, i) && plateau[y][i] == turn) {
+        for (i=x-1; plateau[y][i] == autre; i--)
+            plateau[y][i] = turn;
     }
 
 
     // Jouer le haut 
     i = y - 1; 
     // Tant que c'est la case adversaire en haut.
-    while (case_valide(i, x) && plateau[i][x] == autre) i--; 
+    while (case_valide(i, x) && plateau[i][x] == autre)
+        i--; 
     if (case_valide(i, x) && plateau[i][x] == turn) {
         i = y - 1;
-        while (plateau[i][x] == autre) {
+        for (i=y-1;plateau[i][x] == autre; i--)
             plateau[i][x] = turn; // Manger les cases
-            i--;
-        }
     }
 
     // Jouer le bas
     i = y + 1; 
-    while (case_valide(i, x) && plateau[i][x] == autre) i++;
+    while (case_valide(i, x) && plateau[i][x] == autre)
+        i++;
     if (case_valide(i, x) && plateau[i][x] == turn) {
-        i = y + 1;
-        while (plateau[i][x] == autre) {
+        for (i=y+1;plateau[i][x] == autre;i++)
             plateau[i][x] = turn; // Manger les cases
-            i++;
-        }
     }
 
 
     // Jouer diagonale gauche vers le haut
-    i = y - 1;
-    j = x - 1;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
-        i--;
-        j--;
-    }
+    for (i=y-1, j=x-1; case_valide(i, j) && plateau[i][j] == autre; i--, j--){} // Mettre en place les compteurs
+
     if (case_valide(i, j) && plateau[i][j] == turn) {
-        i = y - 1;
-        j = x - 1;
-        while (plateau[i][j] == autre) {
+        for (i=y-1, j=x-1; plateau[i][j] == autre; i--, j--)
             plateau[i][j] = turn;
-            i--;
-            j--;
-        }
     }
 
     // Jouer diagonale droite vers le haut
@@ -331,11 +317,8 @@ void jouer_coup(short x, short y)
     if (case_valide(i, j) && plateau[i][j] == turn) {
         i = y - 1;
         j = x + 1;
-        while (plateau[i][j] == autre) {
+        for (i=y-1, j=x+1; plateau[i][j] == autre; i--, j++)
             plateau[i][j] = turn;
-            i--;
-            j++;
-        }
     }
 
 
@@ -347,13 +330,8 @@ void jouer_coup(short x, short y)
         j++;
     }
     if (case_valide(i, j) && plateau[i][j] == turn) {
-        i = y + 1;
-        j = x + 1;
-        while (plateau[i][j] == autre) {
+        for (i=y+1, j=x+1;plateau[i][j] == autre; i++, j++)
             plateau[i][j] = turn;
-            i++;
-            j++;
-        }
     }
 
 
@@ -365,13 +343,8 @@ void jouer_coup(short x, short y)
         j--;
     }
     if (case_valide(i, j) && plateau[i][j] == turn) {
-        i = y + 1;
-        j = x - 1;
-        while (plateau[i][j] == autre) {
+        for (i=y+1, j=x-1; plateau[i][j] == autre; i++, j--)
             plateau[i][j] = turn;
-            i++;
-            j--;
-        }
     }
 
 }
