@@ -154,44 +154,44 @@ bool test_coup (short x, short y)
 
 
     // Tester la droite
-    j = x + 1;
+    i = x + 1;
     ok = 0;
-    while (case_valide(y, j) && plateau[j][y] == autre) {
-        j++;
+    while (case_valide(i, y) && plateau[i][y] == autre) {
+        i++;
         ok = 1;
     }
-    if (case_valide(y, j) && plateau[j][y] == turn && ok == 1)
+    if (ok && case_valide(i, y) && plateau[i][y] == turn)
     	return true;
 
 	// Tester la gauche
-    j = x - 1;
+    i = x - 1;
     ok = 0;
-    while (case_valide(y, j) && plateau[j][y] == autre) {
-        j--;
-        ok = 1;
-    }
-    if (case_valide(y, j) && plateau[j][y] == turn && ok == 1)
-    	return true;
-
-    // Tester le haut
-	i = y - 1;
-    ok = 0;
-    while (case_valide(i, x) && plateau[x][i] == autre) {
+    while (case_valide(i, y) && plateau[i][y] == autre) {
         i--;
         ok = 1;
     }
-    if (case_valide(i, x) && plateau[x][i] == turn && ok == 1) 
+    if (ok && case_valide(i, y) && plateau[i][y] == turn)
+    	return true;
+
+    // Tester le haut
+	j = y - 1;
+    ok = 0;
+    while (case_valide(i, x) && plateau[x][j] == autre) {
+        j--;
+        ok = 1;
+    }
+    if (ok && case_valide(x, j) && plateau[x][j] == turn) 
     	return true;
 
 
     // Tester le bas
-    i = y + 1;
+    j = y + 1;
     ok = 0;
-    while (case_valide(i, x) && plateau[x][i] == autre) {
-        i++;
+    while (case_valide(x, j) && plateau[x][j] == autre) {
+        j++;
         ok = 1;
     }
-    if (case_valide(i, x) && plateau[x][i] == turn && ok == 1)
+    if (ok && case_valide(x, j) && plateau[x][j] == turn)
     	return true;
 
 
@@ -204,7 +204,7 @@ bool test_coup (short x, short y)
         j--;
         ok = 1;
     }
-    if (case_valide(i, j) && plateau[j][i] == turn && ok == 1)
+    if (ok && case_valide(i, j) && plateau[j][i] == turn)
     	return true;
 
 
@@ -217,7 +217,7 @@ bool test_coup (short x, short y)
         j++;
         ok = 1;
     }
-    if (case_valide(i, j) && plateau[j][i] == turn && ok == 1)
+    if (ok && case_valide(i, j) && plateau[j][i] == turn)
     	return true;
 
 
@@ -230,7 +230,7 @@ bool test_coup (short x, short y)
         j++;
         ok = 1;
     }
-    if (case_valide(i, j) && plateau[j][i] == turn && ok == 1)
+    if (ok && case_valide(i, j) && plateau[j][i] == turn)
     	return true; 
 
     // Diagonale droite vers le bas
@@ -242,7 +242,7 @@ bool test_coup (short x, short y)
         j--;
         ok = 1;
     }
-    if (case_valide(i, j) && plateau[j][i] == turn && ok == 1)
+    if (ok && case_valide(i, j) && plateau[j][i] == turn)
     	return true;
 
 	return false;
@@ -269,7 +269,7 @@ void jouer_coup(short x, short y)
     }
 
     // Jouer la gauche
-    for (i=x-1;case_valide(i, y) && plateau[y][i] == autre; i--)
+    for (i=x-1;case_valide(i, y) && plateau[i][y] == autre; i--)
         {}
     
     if (case_valide(i, y) && plateau[i][y] == turn) {
