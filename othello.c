@@ -156,42 +156,42 @@ bool test_coup (short x, short y)
     // Tester la droite
     j = x + 1;
     ok = 0;
-    while (case_valide(y, j) && plateau[y][j] == autre) {
+    while (case_valide(y, j) && plateau[j][y] == autre) {
         j++;
         ok = 1;
     }
-    if (case_valide(y, j) && plateau[y][j] == turn && ok == 1)
+    if (case_valide(y, j) && plateau[j][y] == turn && ok == 1)
     	return true;
 
 	// Tester la gauche
     j = x - 1;
     ok = 0;
-    while (case_valide(y, j) && plateau[y][j] == autre) {
+    while (case_valide(y, j) && plateau[j][y] == autre) {
         j--;
         ok = 1;
     }
-    if (case_valide(y, j) && plateau[y][j] == turn && ok == 1)
+    if (case_valide(y, j) && plateau[j][y] == turn && ok == 1)
     	return true;
 
     // Tester le haut
 	i = y - 1;
     ok = 0;
-    while (case_valide(i, x) && plateau[i][x] == autre) {
+    while (case_valide(i, x) && plateau[x][i] == autre) {
         i--;
         ok = 1;
     }
-    if (case_valide(i, x) && plateau[i][x] == turn && ok == 1) 
+    if (case_valide(i, x) && plateau[x][i] == turn && ok == 1) 
     	return true;
 
 
     // Tester le bas
     i = y + 1;
     ok = 0;
-    while (case_valide(i, x) && plateau[i][x] == autre) {
+    while (case_valide(i, x) && plateau[x][i] == autre) {
         i++;
         ok = 1;
     }
-    if (case_valide(i, x) && plateau[i][x] == turn && ok == 1)
+    if (case_valide(i, x) && plateau[x][i] == turn && ok == 1)
     	return true;
 
 
@@ -199,12 +199,12 @@ bool test_coup (short x, short y)
     i = y - 1;
     j = x - 1;
     ok = 0;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
+    while (case_valide(i, j) && plateau[j][i] == autre) {
         i--;
         j--;
         ok = 1;
     }
-    if (case_valide(i, j) && plateau[i][j] == turn && ok == 1)
+    if (case_valide(i, j) && plateau[j][i] == turn && ok == 1)
     	return true;
 
 
@@ -212,12 +212,12 @@ bool test_coup (short x, short y)
     i = y - 1;
     j = x + 1;
     ok = 0;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
+    while (case_valide(i, j) && plateau[j][i] == autre) {
         i--;
         j++;
         ok = 1;
     }
-    if (case_valide(i, j) && plateau[i][j] == turn && ok == 1)
+    if (case_valide(i, j) && plateau[j][i] == turn && ok == 1)
     	return true;
 
 
@@ -225,24 +225,24 @@ bool test_coup (short x, short y)
     i = y + 1;
     j = x + 1;
     ok = 0;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
+    while (case_valide(i, j) && plateau[j][i] == autre) {
         i++;
         j++;
         ok = 1;
     }
-    if (case_valide(i, j) && plateau[i][j] == turn && ok == 1)
+    if (case_valide(i, j) && plateau[j][i] == turn && ok == 1)
     	return true; 
 
     // Diagonale droite vers le bas
     i = y + 1;
     j = x - 1;
     ok = 0;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
+    while (case_valide(i, j) && plateau[j][i] == autre) {
         i++;
         j--;
         ok = 1;
     }
-    if (case_valide(i, j) && plateau[i][j] == turn && ok == 1)
+    if (case_valide(i, j) && plateau[j][i] == turn && ok == 1)
     	return true;
 
 	return false;
@@ -252,7 +252,6 @@ bool test_coup (short x, short y)
 
 void jouer_coup(short x, short y)
 {
-
     printf("Vous jouez : %c%d\n",65+x,y+1);
 
 	plateau[x][y] = turn;
@@ -262,70 +261,71 @@ void jouer_coup(short x, short y)
 
 	// Jouer la droite
     i = x + 1;
-    while (case_valide(y, i) && plateau[y][i] == autre)
+    while (case_valide(i, y) && plateau[i][y] == autre)
         i++;
-    if (case_valide(y, i) && plateau[y][i] == turn) {
-        for (i=x+1; plateau[y][i] == autre; i++)
-            plateau[y][i] = turn;
+    if (case_valide(i, y) && plateau[i][y] == turn) {
+        for (i=x+1; plateau[i][y] == autre; i++)
+            plateau[i][y] = turn;
     }
 
     // Jouer la gauche
-    for (i=x-1;case_valide(y, i) && plateau[y][i] == autre; i--) {}
+    for (i=x-1;case_valide(i, y) && plateau[y][i] == autre; i--)
+        {}
     
-    if (case_valide(y, i) && plateau[y][i] == turn) {
-        for (i=x-1; plateau[y][i] == autre; i--)
-            plateau[y][i] = turn;
+    if (case_valide(i, y) && plateau[i][y] == turn) {
+        for (i=x-1; plateau[i][y] == autre; i--)
+            plateau[i][y] = turn;
     }
 
 
-    // Jouer le haut 
-    i = y - 1; 
+    // Jouer le haut
+    i = y - 1;
     // Tant que c'est la case adversaire en haut.
-    while (case_valide(i, x) && plateau[i][x] == autre)
-        i--; 
-    if (case_valide(i, x) && plateau[i][x] == turn) {
+    while (case_valide(i, x) && plateau[x][i] == autre)
+        i--;
+    if (case_valide(i, x) && plateau[x][i] == turn) {
         i = y - 1;
-        for (i=y-1;plateau[i][x] == autre; i--)
-            plateau[i][x] = turn; // Manger les cases
+        for (i=y-1;plateau[x][i] == autre; i--)
+            plateau[x][i] = turn; // Manger les cases
     }
 
     // Jouer le bas
-    i = y + 1; 
-    while (case_valide(i, x) && plateau[i][x] == autre)
+    i = y + 1;
+    while (case_valide(i, x) && plateau[x][i] == autre)
         i++;
-    if (case_valide(i, x) && plateau[i][x] == turn) {
-        for (i=y+1;plateau[i][x] == autre;i++)
-            plateau[i][x] = turn; // Manger les cases
+    if (case_valide(i, x) && plateau[x][i] == turn) {
+        for (i=y+1;plateau[x][i] == autre;i++)
+            plateau[x][i] = turn; // Manger les cases
     }
 
 
     // Jouer diagonale gauche vers le haut
-    for (i=y-1, j=x-1; case_valide(i, j) && plateau[i][j] == autre; i--, j--){} // Mettre en place les compteurs
+    for (i=y-1, j=x-1; case_valide(i, j) && plateau[j][i] == autre; i--, j--){} // Mettre en place les compteurs
 
-    if (case_valide(i, j) && plateau[i][j] == turn) {
-        for (i=y-1, j=x-1; plateau[i][j] == autre; i--, j--)
-            plateau[i][j] = turn;
+    if (case_valide(i, j) && plateau[j][i] == turn) {
+        for (i=y-1, j=x-1; plateau[j][i] == autre; i--, j--)
+            plateau[j][i] = turn;
     }
 
     // Jouer diagonale droite vers le haut
     i = y - 1;
     j = x + 1;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
+    while (case_valide(i, j) && plateau[j][i] == autre) {
         i--;
         j++;
     }
-    if (case_valide(i, j) && plateau[i][j] == turn) {
+    if (case_valide(i, j) && plateau[j][i] == turn) {
         i = y - 1;
         j = x + 1;
-        for (i=y-1, j=x+1; plateau[i][j] == autre; i--, j++)
-            plateau[i][j] = turn;
+        for (i=y-1, j=x+1; plateau[j][i] == autre; i--, j++)
+            plateau[j][i] = turn;
     }
 
 
     // Jouer diagonale gauche vers le bas
     i = y + 1;
     j = x + 1;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
+    while (case_valide(i, j) && plateau[j][i] == autre) {
         i++;
         j++;
     }
@@ -338,15 +338,14 @@ void jouer_coup(short x, short y)
     // Jouer diagonale droite vers le bas
     i = y + 1;
     j = x - 1;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
+    while (case_valide(i, j) && plateau[j][i] == autre) {
         i++;
         j--;
     }
-    if (case_valide(i, j) && plateau[i][j] == turn) {
-        for (i=y+1, j=x-1; plateau[i][j] == autre; i++, j--)
-            plateau[i][j] = turn;
+    if (case_valide(i, j) && plateau[j][i] == turn) {
+        for (i=y+1, j=x-1; plateau[j][i] == autre; i++, j--)
+            plateau[j][i] = turn;
     }
-
 }
 
 
