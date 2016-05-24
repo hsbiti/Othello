@@ -15,6 +15,7 @@ char joueur2[50];
 short turn=1;
 char jeu[2];
 short score_j1, score_j2;
+short contre_ia; // 0 si joueur contre joueur, 1 si joueur contre ia
 
 
 // X == Noir
@@ -58,34 +59,6 @@ void initialiser()
 	plateau[N/2-1][N/2-1] = 2;
 	plateau[N/2][N/2] = 2;
 
-}
-
-/**
-  * @brief Fonction qui récupère uniquement le jeu du joueur courant.
-  *        Le joueur peut mettre la case à jouer (Exemple C4), ou écrire tab pour afficher le plateau
-  */
-short recuperer_valeur()
-{
-	if (turn == 1) {
-		printf("[SYS] Au tour de \"%s\"(X). Que voulez-vous jouer ? ",joueur1);
-		scanf("%s",jeu);
-		if (strcmp(jeu,"tab") == 0)
-			afficher_plateau();
-		else
-			printf("[SYS] Vous avez joué %s\n\n",jeu);
-	} else if (turn == 2) {
-		printf("[SYS] Au tour de \"%s\"(O). Que voulez-vous jouer ? ",joueur2);
-		scanf("%s",jeu);
-		if (strcmp(jeu,"tab") == 0)
-			afficher_plateau();
-		else
-			printf("[SYS] Vous avez joué %s\n\n",jeu);
-	} else {
-		fprintf(stderr, "[ERR] Erreur selection joueur\n");
-		return -1;
-	}
-
-	return 1;
 }
 
 
@@ -337,53 +310,127 @@ void jouer_coup(short x, short y)
 
 
     // Jouer diagonale droite vers le bas
-    i = y + 1;
-    j = x - 1;
-    while (case_valide(i, j) && plateau[j][i] == autre) {
-        i++;
-        j--;
+    i = x - 1;
+    j = y + 1;
+    while (case_valide(i, j) && plateau[i][j] == autre) {
+        i--;
+        j++;
     }
-    if (case_valide(i, j) && plateau[j][i] == turn) {
-        for (i=y+1, j=x-1; plateau[j][i] == autre; i++, j--)
-            plateau[j][i] = turn;
+    if (case_valide(i, j) && plateau[i][j] == turn) {
+        for (i=x-1, j=y+1; plateau[i][j] == autre; i--, j++)
+            plateau[i][j] = turn;
     }
 }
 
 
-
- void print_image(FILE *fptr)
+/**
+  * @brief Fonction qui lit l'image ASCII dans le fichier "nom" et la print
+  */
+bool print_image(char *nom)
 {
-    char read_string[MAX_LEN];
+	FILE *fptr = NULL;
  
+    if((fptr = fopen(nom,"r")) == NULL)
+    {
+        fprintf(stderr,"Can't open %s\n",nom);
+        return false;
+    }
+
+    char read_string[MAX_LEN];
+	 
     while(fgets(read_string,sizeof(read_string),fptr) != NULL)
         printf("%s",read_string);
+
+     fclose(fptr);
+
+     return true;
 }
+
+
+
+
+/**
+  * @brief Fonction qui récupère uniquement le jeu du joueur courant.
+  *        Le joueur peut mettre la case à jouer (Exemple C4), ou écrire tab pour afficher le plateau
+  */
+short recuperer_valeur()
+{
+	if (turn == 1) {
+		printf("[SYS] Au tour de \"%s\"(X). Que voulez-vous jouer ? ",joueur1);
+		scanf("%s",jeu);
+		if (strcmp(jeu,"tab") == 0)
+			afficher_plateau();
+		else
+			printf("[SYS] Vous avez joué %s\n\n",jeu);
+	} else if (turn == 2) {
+
+		if (contre_ia)
+		{
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (test_adjacence(i,j) && test_coup(i,j)) {
+						jeu[0] = i+65;
+						jeu[1] = j+49;
+					}
+				}
+			}
+			/*
+			if (i == 8 && j == 8)
+				return -1;
+			*/
+			printf("[SYS] PC a joué : %s\n", jeu);
+		} else {
+			printf("[SYS] Au tour de \"%s\"(O). Que voulez-vous jouer ? ",joueur2);
+			scanf("%s",jeu);
+
+			if (strcmp(jeu,"tab") == 0)
+				afficher_plateau();
+			else
+				printf("[SYS] Vous avez joué %s\n\n",jeu);
+		}
+	} else {
+		fprintf(stderr, "[ERR] Erreur selection joueur\n");
+		return -1;
+	}
+
+	return 1;
+}
+
+
+
 
 
 int main ()
 {
 
-    char *filename = "description.txt";
-    FILE *fptr = NULL;
- 
-    if((fptr = fopen(filename,"r")) == NULL)
-    {
-        fprintf(stderr,"Error opening %s\n",filename);
-        return 1;
-    }
-    print_image(fptr);
-    fclose(fptr);
+	if (!print_image("description.txt"))
+		fprintf(stderr, "Can't load description from description.txt\n");
+
  
     printf("\n\n\n");
+
+
+    char choix;
+
+    printf("Voulez-vous jouer contre l'ordinateur ? (O/n)\n");
+
+    scanf("%c",&choix);
+
+    if (choix == 'O' || choix == 'o')
+    	contre_ia = 1;
 
 
 	printf("[SYS] Entrez le nom du joueur1 (X) : ");
 	scanf("%s",joueur1);
 
-	printf("[SYS] Entrez le nom du joueur2 (O) : ");
-	scanf("%s",joueur2);
+	if (contre_ia) {
+		strcpy(joueur2,"PC");
 
-	printf("[SYS] Joueur1: \"%s\", Joueur2: \"%s\"\n",joueur1, joueur2);
+	} else { 
+		printf("[SYS] Entrez le nom du joueur2 (O) : ");
+		scanf("%s",joueur2);
+	}
+	printf("[SYS] Joueur1(X): \"%s\", Joueur2(O): \"%s\"\n",joueur1, joueur2);
 
 	initialiser();
 	afficher_plateau();
@@ -426,6 +473,7 @@ int main ()
 			fprintf(stderr, "[ERR] La case est déjà remplie :( Réessayez\n");
 			continue;
 		}
+		
 		if (!test_adjacence(x,y) || !test_coup(x,y)) {
 			fprintf(stderr, "[ERR] Ce coup est impossible. Réessayez\n");
 			continue;
