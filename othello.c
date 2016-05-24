@@ -486,6 +486,8 @@ int main ()
 
 	}
 
+	printf("Terminé ! %s a eu %d, %s a eu %d\n",joueur1, score_j1, joueur2, score_j2);
+
 
 	return 0;
 }
