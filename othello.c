@@ -149,11 +149,10 @@ bool test_coup (short x, short y)
 
 	short autre = (turn == 1) ? 2 : 1;
 
-    if (!case_valide(y, x) || plateau[y][x] != 0)
+    if (!case_valide(y, x) || plateau[x][y] != 0)
     	return false;
 
     int i, j, ok;
-
 
     // Tester la droite
     i = x + 1;
@@ -195,7 +194,6 @@ bool test_coup (short x, short y)
     }
     if (ok && case_valide(x, j) && plateau[x][j] == turn)
     	return true;
-
 
     // Tester diagonale gauche vers le haut
     i = y - 1;
@@ -302,7 +300,8 @@ void jouer_coup(short x, short y)
 
 
     // Jouer diagonale gauche vers le haut
-    for (i=y-1, j=x-1; case_valide(i, j) && plateau[j][i] == autre; i--, j--){} // Mettre en place les compteurs
+    for (i=y-1, j=x-1; case_valide(i, j) && plateau[j][i] == autre; i--, j--)
+        {} // Mettre en place les compteurs
 
     if (case_valide(i, j) && plateau[j][i] == turn) {
         for (i=y-1, j=x-1; plateau[j][i] == autre; i--, j--)
