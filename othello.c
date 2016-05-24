@@ -15,7 +15,7 @@ char joueur2[50];
 short turn=1;
 char jeu[2];
 short score_j1, score_j2;
-short contre_ia; // 0 si joueur contre joueur, 1 si joueur contre ia
+short contre_ia; // 0 si joueur contre joueur, 1 si joueur contre PC
 
 
 // X == Noir
@@ -110,10 +110,7 @@ bool test_adjacence (short x, short y)
 
 bool case_valide(short x, short y)
 {
-	if ((x >= 0) && (x < N) && (y >= 0) && (y < N))
-		return true;
-
-	return false;
+	return ((x >= 0) && (x < N) && (y >= 0) && (y < N)) ? true : false;
 }
 
 
@@ -366,8 +363,9 @@ short recuperer_valeur()
 
 		if (contre_ia)
 		{
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j < N; j++) {
+			int i, j;
+			for (i = 0; i < N; i++) {
+				for (j = 0; j < N; j++) {
 					if (test_adjacence(i,j) && test_coup(i,j)) {
 						jeu[0] = i+65;
 						jeu[1] = j+49;
