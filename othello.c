@@ -12,20 +12,18 @@
 
 char joueur1[50];
 char joueur2[50];
-short turn=1;
+int turn=1;
 char jeu[2];
-short score_j1, score_j2;
-short contre_ia; // 0 si joueur contre joueur, 1 si joueur contre PC
+int score_j1, score_j2;
+int contre_ia; /* 0 si joueur contre joueur, 1 si joueur contre PC*/
 
 
-// X == Noir
-// O == Blanc
-short	plateau [N][N];
+/* X == Noir
+   O == Blanc */
+int	plateau [N][N];
 
 
-/**
-  * @brief Fonction pour afficher le plateau
-  */
+
 void afficher_plateau()
 {
 	int	x, y;
@@ -48,57 +46,50 @@ void afficher_plateau()
 
 }
 
-/**
-  * @brief Fonction qui initialise le plateau selon les règles d'othello
-  */
+
 void initialiser()
 {
-	plateau[N/2][N/2-1] = 1;
-	plateau[N/2-1][N/2] = 1;
+	plateau[4][3] = 1;
+	plateau[3][4] = 1;
 
-	plateau[N/2-1][N/2-1] = 2;
-	plateau[N/2][N/2] = 2;
+	plateau[3][3] = 2;
+	plateau[4][4] = 2;
 
 }
 
 
-/**
-  * @brief Fonction qui teste si les cases adjacentes sont vides
-  * @return true  si le coup est possible
-  *			false sinon
-  */
-bool test_adjacence (short x, short y)
+bool test_adjacence (int x, int y)
 {
 
-	// Dernière case en bas à droite
+	/* Dernière case en bas à droite */
 	if (
 		(x == 7 && y == 7)
 		&& (!plateau[x-1][y] && !plateau[x-1][y-1] && !plateau[x][y-1])
 		)
 		return false;
 
-	// Dernière case en haut à droite
+	/* Dernière case en haut à droite */
 	if (
 		(x == 7 && y == 0)
 		&& (!plateau[x-1][y] && !plateau[x][y+1] && !plateau[x-1][y-1])
 		)
 		return false;
 
-	// Première case en haut à gauche
+	/* Première case en haut à gauche */
 	if (
 		(x == 0 && y == 0)
 		&& (!plateau[x+1][y] && !plateau[x+1][y-1] && !plateau[x][y+1])
 		)
 		return false;
 
-	// Première case en bas à gauche
+	/* Première case en bas à gauche */
 	if (
 		(x == 0 && y == 7)
 		&& (!plateau[x][y-1] && !plateau[x+1][y-1] && !plateau[x+1][y])
 		)
 		return false;
 
-	// Cas normal
+	/* Cas normal */
 	if (!plateau[x+1][y] && !plateau[x+1][y+1] && !plateau[x][y+1] && !plateau[x-1][y+1] 
         && !plateau[x-1][y] && !plateau[x-1][y-1] && !plateau[x][y-1] && !plateau[x+1][y-1])
 		return false;
@@ -108,23 +99,25 @@ bool test_adjacence (short x, short y)
 }
 
 
-bool case_valide(short x, short y)
+bool case_valide(int x, int y)
 {
-	return ((x >= 0) && (x < N) && (y >= 0) && (y < N)) ? true : false;
+	if ((x >= 0) && (x < N) && (y >= 0) && (y < N))
+		return true;
+	else return false;
 }
 
 
-bool test_coup (short x, short y)
+bool test_coup (int x, int y)
 {
 
-	short autre = (turn == 1) ? 2 : 1;
+	int autre = (turn == 1) ? 2 : 1;
 
     if (!case_valide(y, x) || plateau[x][y] != 0)
     	return false;
 
     int i, j, ok;
 
-    // Tester la droite
+    /* Tester la droite */
     i = x + 1;
     ok = 0;
     while (case_valide(i, y) && plateau[i][y] == autre) {
@@ -134,7 +127,7 @@ bool test_coup (short x, short y)
     if (ok && case_valide(i, y) && plateau[i][y] == turn)
     	return true;
 
-	// Tester la gauche
+	/* Tester la gauche */
     i = x - 1;
     ok = 0;
     while (case_valide(i, y) && plateau[i][y] == autre) {
@@ -144,7 +137,7 @@ bool test_coup (short x, short y)
     if (ok && case_valide(i, y) && plateau[i][y] == turn)
     	return true;
 
-    // Tester le haut
+    /* Tester le haut */
 	j = y - 1;
     ok = 0;
     while (case_valide(i, x) && plateau[x][j] == autre) {
@@ -155,7 +148,7 @@ bool test_coup (short x, short y)
     	return true;
 
 
-    // Tester le bas
+    /* Tester le bas */
     j = y + 1;
     ok = 0;
     while (case_valide(x, j) && plateau[x][j] == autre) {
@@ -165,7 +158,7 @@ bool test_coup (short x, short y)
     if (ok && case_valide(x, j) && plateau[x][j] == turn)
     	return true;
 
-    // Tester diagonale gauche vers le haut
+    /* Tester diagonale gauche vers le haut */
     i = y - 1;
     j = x - 1;
     ok = 0;
@@ -178,7 +171,7 @@ bool test_coup (short x, short y)
     	return true;
 
 
-    // Tester diagonale droite vers le haut
+    /* Tester diagonale droite vers le haut */
     i = y - 1;
     j = x + 1;
     ok = 0;
@@ -191,7 +184,7 @@ bool test_coup (short x, short y)
     	return true;
 
 
-    // Tester diagonale gauche vers le bas
+    /* Tester diagonale gauche vers le bas */
     i = y + 1;
     j = x + 1;
     ok = 0;
@@ -203,7 +196,7 @@ bool test_coup (short x, short y)
     if (ok && case_valide(i, j) && plateau[j][i] == turn)
     	return true; 
 
-    // Diagonale droite vers le bas
+    /* Diagonale droite vers le bas */
     i = y + 1;
     j = x - 1;
     ok = 0;
@@ -220,27 +213,27 @@ bool test_coup (short x, short y)
 
 
 
-void jouer_coup(short x, short y)
+void jouer_coup(int x, int y)
 {
     printf("Vous jouez : %c%d\n",65+x,y+1);
 
 	plateau[x][y] = turn;
 
 	int i=0,j=0;
-	short autre = (turn == 1) ? 2 : 1;
+	int autre = (turn == 1) ? 2 : 1;
 
-	// Jouer la droite
-    i = x + 1;
-    while (case_valide(i, y) && plateau[i][y] == autre)
-        i++;
+	/* Jouer la droite */
+    for (i=x+1; case_valide(i, y) && plateau[i][y] == autre; i++)
+    	{} /* Mettre en place les compteurs */
+
     if (case_valide(i, y) && plateau[i][y] == turn) {
         for (i=x+1; plateau[i][y] == autre; i++)
             plateau[i][y] = turn;
     }
 
-    // Jouer la gauche
+    /* Jouer la gauche */
     for (i=x-1;case_valide(i, y) && plateau[i][y] == autre; i--)
-        {}
+        {} /* Mettre en place les compteurs */
     
     if (case_valide(i, y) && plateau[i][y] == turn) {
         for (i=x-1; plateau[i][y] == autre; i--)
@@ -248,43 +241,40 @@ void jouer_coup(short x, short y)
     }
 
 
-    // Jouer le haut
-    i = y - 1;
-    // Tant que c'est la case adversaire en haut.
-    while (case_valide(i, x) && plateau[x][i] == autre)
-        i--;
+    /* Jouer le haut */
+    /* Tant que c'est la case adversaire en haut. */
+    for (i=y-1;case_valide(i, x) && plateau[x][i] == autre;i--)
+    	{} /* Mettre en place les compteurs */
+
     if (case_valide(i, x) && plateau[x][i] == turn) {
         i = y - 1;
         for (i=y-1;plateau[x][i] == autre; i--)
-            plateau[x][i] = turn; // Manger les cases
+            plateau[x][i] = turn; /* Manger les cases */
     }
 
-    // Jouer le bas
-    i = y + 1;
-    while (case_valide(i, x) && plateau[x][i] == autre)
-        i++;
+    /* Jouer le bas */
+    for (i=y+1; case_valide(i, x) && plateau[x][i] == autre; i++)
+	    {} /* Mettre en place les compteurs */
+
     if (case_valide(i, x) && plateau[x][i] == turn) {
         for (i=y+1;plateau[x][i] == autre;i++)
-            plateau[x][i] = turn; // Manger les cases
+            plateau[x][i] = turn; /* Manger les cases */
     }
 
 
-    // Jouer diagonale gauche vers le haut
+    /* Jouer diagonale gauche vers le haut */
     for (i=y-1, j=x-1; case_valide(i, j) && plateau[j][i] == autre; i--, j--)
-        {} // Mettre en place les compteurs
+        {} /* Mettre en place les compteurs */
 
     if (case_valide(i, j) && plateau[j][i] == turn) {
         for (i=y-1, j=x-1; plateau[j][i] == autre; i--, j--)
             plateau[j][i] = turn;
     }
 
-    // Jouer diagonale droite vers le haut
-    i = y - 1;
-    j = x + 1;
-    while (case_valide(i, j) && plateau[j][i] == autre) {
-        i--;
-        j++;
-    }
+    /* Jouer diagonale droite vers le haut */
+    for (i=y-1, j=x+1; case_valide(i, j) && plateau[j][i] == autre; i--, j++)
+	    {}
+    
     if (case_valide(i, j) && plateau[j][i] == turn) {
         i = y - 1;
         j = x + 1;
@@ -293,26 +283,18 @@ void jouer_coup(short x, short y)
     }
 
 
-    // Jouer diagonale gauche vers le bas
-    i = y + 1;
-    j = x + 1;
-    while (case_valide(i, j) && plateau[j][i] == autre) {
-        i++;
-        j++;
-    }
+    /* Jouer diagonale gauche vers le bas */
+    for (i=y+1, j=x+1; case_valide(i, j) && plateau[j][i] == autre; i++, j++)
+    	{}
     if (case_valide(i, j) && plateau[i][j] == turn) {
         for (i=y+1, j=x+1;plateau[i][j] == autre; i++, j++)
             plateau[i][j] = turn;
     }
 
 
-    // Jouer diagonale droite vers le bas
-    i = x - 1;
-    j = y + 1;
-    while (case_valide(i, j) && plateau[i][j] == autre) {
-        i--;
-        j++;
-    }
+    /* Jouer diagonale droite vers le bas */
+    for (i=x-1, j=y+1; case_valide(i, j) && plateau[i][j] == autre; i--, j++)
+    	{}
     if (case_valide(i, j) && plateau[i][j] == turn) {
         for (i=x-1, j=y+1; plateau[i][j] == autre; i--, j++)
             plateau[i][j] = turn;
@@ -320,37 +302,9 @@ void jouer_coup(short x, short y)
 }
 
 
-/**
-  * @brief Fonction qui lit l'image ASCII dans le fichier "nom" et la print
-  */
-bool print_image(char *nom)
-{
-	FILE *fptr = NULL;
- 
-    if((fptr = fopen(nom,"r")) == NULL)
-    {
-        fprintf(stderr,"Can't open %s\n",nom);
-        return false;
-    }
-
-    char read_string[MAX_LEN];
-	 
-    while(fgets(read_string,sizeof(read_string),fptr) != NULL)
-        printf("%s",read_string);
-
-     fclose(fptr);
-
-     return true;
-}
 
 
-
-
-/**
-  * @brief Fonction qui récupère uniquement le jeu du joueur courant.
-  *        Le joueur peut mettre la case à jouer (Exemple C4), ou écrire tab pour afficher le plateau
-  */
-short recuperer_valeur()
+int recuperer_valeur()
 {
 	if (turn == 1) {
 		printf("[SYS] Au tour de \"%s\"(X). Que voulez-vous jouer ? ",joueur1);
@@ -401,12 +355,6 @@ short recuperer_valeur()
 int main ()
 {
 
-	if (!print_image("description.txt"))
-		fprintf(stderr, "Can't load description from description.txt\n");
-
- 
-    printf("\n\n\n");
-
 
     char choix;
 
@@ -433,25 +381,26 @@ int main ()
 	initialiser();
 	afficher_plateau();
 
-	short finished=0;
+	int finished=0;
 	while(!finished)
 	{
-		short val = recuperer_valeur();
+		int val = recuperer_valeur();
 
 
 		if (val < 0)
 			finished=1;
 
 
-		// Dans la table ASCII: • les minuscules sont entre 97 et 122
-		// 						• Les majuscules entre 65 et 90;
-		short x,y;
+		/* Dans la table ASCII: • les minuscules sont entre 97 et 122
+		 						• Les majuscules entre 65 et 90;
+		*/
+		int x,y;
 		y = (jeu[1] - '0') -1;
 		
 
-		if (jeu[0] >= 65 && jeu[0] < 73) // 73 pour s'arrêter à H
+		if (jeu[0] >= 65 && jeu[0] < 73) /* 73 pour s'arrêter à H */
 			x = jeu[0] - 65;
-		else if (jeu[0] >= 97 && jeu[0] < 105) // 105 pour s'arrêter à h
+		else if (jeu[0] >= 97 && jeu[0] < 105) /* 105 pour s'arrêter à h */
 			x = jeu[0] - 97;
 		else {
 			fprintf(stderr, "[ERR] Vous avez entré une valeur erronnée.\n");
